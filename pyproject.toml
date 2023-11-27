@@ -1,15 +1,21 @@
 [tool.poetry]
-name = "a-random-service"
+name = "service"
 version = "0.1.0"
 description = "PLP final project"
 authors = ["IsmaelSendrosCodurance <128392676+IsmaelSendrosCodurance@users.noreply.github.com>"]
 readme = "README.md"
+packages = [{include = "service"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+fastapi = "^0.104.1"
+uvicorn = "^0.24.0.post1"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start = "service.run:start"
 
