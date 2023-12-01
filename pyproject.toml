@@ -10,6 +10,8 @@ packages = [{include = "service"}]
 python = "^3.9"
 fastapi = "^0.104.1"
 uvicorn = "^0.24.0.post1"
+black = "^23.11.0"
+flake8 = "^6.1.0"
 
 
 [build-system]
