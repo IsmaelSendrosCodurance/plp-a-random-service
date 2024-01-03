@@ -1,6 +1,7 @@
 name: "PLP deployment"
 
 on:
+  workflow_dispatch:
 
 env:
   AWS_REGION: eu-west-3
