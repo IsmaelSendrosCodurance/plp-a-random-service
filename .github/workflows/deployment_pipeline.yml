@@ -1,0 +1,36 @@
+name: "PLP deployment"
+
+on:
+
+env:
+  AWS_REGION: eu-west-3
+  ECR_REPOSITORY: isendros-plp
+  ECS_CLUSTER: isendros-plp
+  ECS_SERVICE: isendros-plp-ecs-service
+  ECS_TASK_DEFINITION: isendros-plp-ecr-task-definition
+
+jobs:
+  deploy:
+    name: Build and Push to ECR
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::300563897675:policy/isendros-plp-ecr-put-images
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT

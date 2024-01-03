@@ -1,6 +1,6 @@
 version: '3.5'
 services:
-  a-random-servoce:
+  a-random-service:
     build:
       context: .
     ports:
