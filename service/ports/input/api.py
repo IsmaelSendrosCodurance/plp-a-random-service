@@ -30,7 +30,7 @@ async def root():
     responses = [
         {
             'code': 200,
-            'message': 'I\'m a teapot 3 !!'
+            'message': 'I\'m a teapot 2 !!'
         },
         {
             'code': 404,
@@ -44,7 +44,6 @@ async def root():
 
     response = random.choice(responses)
 
-    if response['code'] == '200':
-        return "I'm a random teapot!"
-    else:
-        raise HTTPException(status_code=HTTPStatus(response['code']),detail=response['message'])
+    if response['code'] == 200:
+        return response['message']
+    raise HTTPException(status_code=HTTPStatus(response['code']),detail=response['message'])
