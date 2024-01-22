@@ -68,8 +68,8 @@ jobs:
       - name: Sleep for 60 seconds
         run: sleep 60s
         shell: bash
+      - name: Terraform Apply desired_count 1
+        run: terraform apply -auto-approve -var="desired_count=1"
       - name: Stop Oldest Task
         working-directory: ./scripts
         run: ./kill_oldest_task.sh
-      - name: Terraform Apply desired_count 1
-        run: terraform apply -auto-approve -var="desired_count=1"
