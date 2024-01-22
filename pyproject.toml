@@ -12,6 +12,7 @@ fastapi = "^0.104.1"
 uvicorn = "^0.24.0.post1"
 black = "^23.11.0"
 flake8 = "^6.1.0"
+sh = "^2.0.6"
 
 
 [build-system]

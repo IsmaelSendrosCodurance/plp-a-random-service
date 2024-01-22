@@ -43,10 +43,36 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-#  deploy:
-#    name: Blue/Green deployment
-#    runs-on: ubuntu-latest
-#    environment: dev
-#    needs: [build-push]
-#
-#    steps:
+  deploy:
+    name: Blue/Green deployment
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: [build-push]
+
+    steps:
+      - name: Terraform Init
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+        run: terraform init
+      - name: Terraform Plan
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+        run: terraform plan
+      - name: Terraform Apply desired_count 2
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+        run: terraform apply -auto-approve -var="desired_count=2"
+      - name: Sleep for 60 seconds
+        run: sleep 60s
+        shell: bash
+      - name: Stop Oldest Task
+        working-directory: ./scripts
+        run: ./kill_oldest_task.sh
+      - name: Terraform Apply desired_count 1
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+        run: terraform apply -auto-approve -var="desired_count=1"
