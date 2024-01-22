@@ -138,6 +138,7 @@ resource "aws_appautoscaling_target" "isendros-plp-ecs-autoscaling-target-tf" {
   resource_id        = "service/isendros-plp-ecs-cluster-tf/isendros-plp-ecs-service-tf"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
+  depends_on          = [aws_ecs_service.isendros-plp-ecs-service-tf]
 }
 
 resource "aws_appautoscaling_policy" "ecs_policy" {
@@ -146,6 +147,7 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
   resource_id        = aws_appautoscaling_target.isendros-plp-ecs-autoscaling-target-tf.resource_id
   scalable_dimension = aws_appautoscaling_target.isendros-plp-ecs-autoscaling-target-tf.scalable_dimension
   service_namespace  = aws_appautoscaling_target.isendros-plp-ecs-autoscaling-target-tf.service_namespace
+  depends_on         = [aws_appautoscaling_target.isendros-plp-ecs-autoscaling-target-tf]
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
