@@ -1,4 +1,4 @@
-name: "PLP deployment"
+name: "Change Number of Tasks"
 
 on:
   workflow_dispatch:
