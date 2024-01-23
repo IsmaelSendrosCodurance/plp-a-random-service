@@ -1,0 +1,38 @@
+name: "PLP deployment"
+
+on:
+  workflow_dispatch:
+    inputs:
+      desired-tasks:
+        description: number of desired tasks
+        type: number
+
+env:
+  AWS_REGION: eu-west-3
+  ECR_REPOSITORY: isendros-plp
+  ECS_CLUSTER: isendros-plp
+  ECS_SERVICE: isendros-plp-ecs-service
+  ECS_TASK_DEFINITION: isendros-plp-ecr-task-definition
+
+jobs:
+  update_desired_tasks:
+    name: Update desired tasks
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{secrets.AWS_REGION}}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+      - name: Terraform Init
+        run: terraform init -input=false
+      - name: Terraform Apply desired_count
+        run: terraform apply -auto-approve -var="desired_count=desired-tasks"
