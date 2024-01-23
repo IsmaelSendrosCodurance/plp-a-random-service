@@ -35,4 +35,4 @@ jobs:
       - name: Terraform Init
         run: terraform init -input=false
       - name: Terraform Apply desired_count
-        run: terraform apply -auto-approve -var="desired_count=desired-tasks"
+        run: terraform apply -auto-approve -var="desired_count=${{ github.event.inputs.desired-tasks }}"
