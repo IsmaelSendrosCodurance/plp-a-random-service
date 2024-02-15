@@ -7,12 +7,17 @@ resource "aws_ecs_service" "isendros-plp-ecs-service-tf" {
   cluster         = aws_ecs_cluster.isendros-plp-ecs-cluster-tf.name
   task_definition = aws_ecs_task_definition.isendros-plp-ecr-task-definition-tf.arn
   desired_count   = var.desired_count
-  depends_on      = [aws_iam_role_policy.isendros-plp-iam-policy-tf]
+  depends_on      = [aws_iam_role_policy.isendros-plp-iam-policy-tf, aws_lb_listener.isendros-plp-lb-listener-tf]
   launch_type = "FARGATE"
   network_configuration {
     subnets = [data.aws_subnet.subnet_1.id,data.aws_subnet.subnet_2.id,data.aws_subnet.subnet_3.id]
     security_groups = [data.aws_security_group.sg_1.id, data.aws_security_group.sg_2.id]
     assign_public_ip = true
+  }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.isendros-plp-lb-target-group-tf.id
+    container_name   = "isendros-plp-ecr-task-definition-tf"
+    container_port   = 8080
   }
 }
 
@@ -33,8 +38,8 @@ resource "aws_ecs_task_definition" "isendros-plp-ecr-task-definition-tf" {
       essential = true
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
+          containerPort = 8080
+          hostPort      = 8080
           appProtocol = "http"
         }
       ]
@@ -83,4 +88,33 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
       scaling_adjustment          = -1
     }
   }
+}
+
+resource "aws_lb" "isendros-plp-lb-tf" {
+  name            = "isendros-plp-lb-tf"
+  subnets         = [data.aws_subnet.subnet_1.id,data.aws_subnet.subnet_2.id,data.aws_subnet.subnet_3.id]
+  security_groups = [data.aws_security_group.sg_1.id, data.aws_security_group.sg_2.id]
+}
+
+resource "aws_lb_target_group" "isendros-plp-lb-target-group-tf" {
+  name        = "isendros-plp-lb-target-group-tf"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = data.aws_vpc.vcp_1.id
+  target_type = "ip"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_lb_listener" "isendros-plp-lb-listener-tf" {
+  load_balancer_arn = aws_lb.isendros-plp-lb-tf.id
+  port              = "8080"
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_lb_target_group.isendros-plp-lb-target-group-tf.id
+    type             = "forward"
+  }
+  depends_on = [aws_lb_target_group.isendros-plp-lb-target-group-tf]
 }

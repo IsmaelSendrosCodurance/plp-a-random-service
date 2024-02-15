@@ -13,3 +13,6 @@ data "aws_security_group" "sg_1" {
 data "aws_security_group" "sg_2" {
   id ="sg-0b4207a15d05501c6"
 }
+data "aws_vpc" "vcp_1"{
+  id="vpc-f3ff439a"
+}
