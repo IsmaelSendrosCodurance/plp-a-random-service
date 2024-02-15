@@ -80,7 +80,7 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
-    cooldown                = 60
+    cooldown                = 10
     metric_aggregation_type = "Average"
 
     step_adjustment {
