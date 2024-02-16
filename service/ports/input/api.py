@@ -30,7 +30,7 @@ async def root():
     responses = [
         {
             'code': 200,
-            'message': 'I\'m a teapot 22 !!'
+            'message': 'I\'m a teapot 23 !!'
         },
         {
             'code': 404,
